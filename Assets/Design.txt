@@ -1,0 +1,11 @@
+﻿Current Functionality
+- Box which counts number of things inside it
+- Text UI which displays the number of objects inside
+- Balls that are dropped into the box
+
+Ideas:
+- Peggle style game but the pegs become balls and you are trying to get them into the bucket at the bottom
+- Shoot balls (fixed number)
+- Let pegs turn into balls when hit and funnel down
+- When no balls left, allow another shot
+- Level has none ball pegs too
