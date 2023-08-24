@@ -251,7 +251,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ballPrefab: {fileID: 1834076253937733588, guid: 263790233a4034f988603a82518f23ca, type: 3}
   ballGroup: {fileID: 261635504}
-  numberOfPrefabs: 100
   minYPosition: 8
   maxYPosition: 24
   minZPosition: -25
@@ -1706,7 +1705,7 @@ MonoBehaviour:
   ballGroup: {fileID: 261635504}
   fireForce: 10
   spawnOffsetScale: 5
-  maxTimeToWait: 5
+  maxTimeToWait: 30
   startNumberOfBalls: 5
   numberOfBallsLeft: 5
   BallsLeftText: {fileID: 212003639}

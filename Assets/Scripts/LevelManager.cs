@@ -45,6 +45,16 @@ public class LevelManager : MonoBehaviour
 
     int numberOfActiveBalls;
 
+    public static int GetNumberOfActiveBalls()
+    {
+        return instance.numberOfActiveBalls;
+    }
+
+    public static void ClearNumberOfActiveBalls()
+    {
+        instance.numberOfActiveBalls = 0;
+    }
+
     public static void AddActiveBall()
     {
         instance.numberOfActiveBalls++;
@@ -54,8 +64,9 @@ public class LevelManager : MonoBehaviour
     {
         
         instance.numberOfActiveBalls = Mathf.Max(numberOfActiveBalls - 1, 0);
+        Debug.Log(instance.numberOfActiveBalls);
 
-        
+
         if (instance.numberOfActiveBalls > 0)
             return;
 

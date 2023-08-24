@@ -11,8 +11,6 @@ public class Firing : MonoBehaviour
     [SerializeField] float fireForce = 10f;
     [SerializeField] float spawnOffsetScale = 1.5f;
 
-    float numberOfActiveBalls = 0;
-
     [SerializeField] float maxTimeToWait = 5f;
     float lastFireTime = 0f;
 
@@ -47,10 +45,10 @@ public class Firing : MonoBehaviour
 
     void FireBall()
     {
-        if (numberOfActiveBalls > 0)
+        if (LevelManager.GetNumberOfActiveBalls() > 0)
         {
             if (Time.time - lastFireTime >= maxTimeToWait)
-                numberOfActiveBalls = 0;
+                LevelManager.ClearNumberOfActiveBalls();
             else
                 return;
         }
