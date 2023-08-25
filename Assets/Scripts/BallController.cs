@@ -10,6 +10,14 @@ public class BallController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
+    private void Update()
+    {
+        if(transform.position.y < -2f)
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private int value;
 
     public int GetValue() { return value; }
@@ -32,7 +40,8 @@ public class BallController : MonoBehaviour
                 break;
         }
     }
-   
+
+    public Transform ActiveBallGroup;
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -40,13 +49,8 @@ public class BallController : MonoBehaviour
         if (!rb.useGravity)
         {
             rb.useGravity = true;
-            EventManager.CallBallActiveEvent();
+            transform.SetParent(ActiveBallGroup);
         }
-    }
-
-    private void OnDestroy()
-    {
-        EventManager.CallBallDeletedEvent();
     }
 
 }

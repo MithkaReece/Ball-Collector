@@ -11,9 +11,6 @@ public class Firing : MonoBehaviour
     [SerializeField] float fireForce = 10f;
     [SerializeField] float spawnOffsetScale = 1.5f;
 
-    [SerializeField] float maxTimeToWait = 5f;
-    float lastFireTime = 0f;
-
     [SerializeField] int startNumberOfBalls = 5;
     [SerializeField] int numberOfBallsLeft;
     public Text BallsLeftText;
@@ -41,30 +38,26 @@ public class Firing : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
             FireBall();
+        Debug.Log(LevelManager.GetNumberOfActiveBalls());
     }
 
     void FireBall()
     {
         if (LevelManager.GetNumberOfActiveBalls() > 0)
         {
-            if (Time.time - lastFireTime >= maxTimeToWait)
-                LevelManager.ClearNumberOfActiveBalls();
-            else
-                return;
+            return; // Still active balls
         }
 
 
 
         // Calculate the spawn position with the offset
         Vector3 spawnPosition = transform.position + transform.forward * spawnOffsetScale + Vector3.up;
+        spawnPosition.x = ballPrefab.transform.position.x;
 
         // Instantiate the ball prefab at the current object's position and rotation
         GameObject newBall = Instantiate(ballPrefab, spawnPosition, transform.rotation);
         newBall.transform.parent = ballGroup;
-
-        LevelManager.AddActiveBall();
-
-        lastFireTime = Time.time;
+        newBall.transform.localScale = new Vector3(LevelManager.BallSize, LevelManager.BallSize, LevelManager.BallSize);
 
         numberOfBallsLeft--;
         BallsLeftText.text = "Balls Left: " + numberOfBallsLeft;

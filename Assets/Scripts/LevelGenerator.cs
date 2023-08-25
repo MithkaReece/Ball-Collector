@@ -5,7 +5,8 @@ using UnityEngine;
 public class LevelGenerator : MonoBehaviour
 {
     [SerializeField] GameObject ballPrefab;
-    [SerializeField] Transform ballGroup;
+    [SerializeField] Transform staticBallGroup;
+    [SerializeField] Transform activeBallGroup;
 
     [SerializeField] float minYPosition = -5f;
     [SerializeField] float maxYPosition = 5f;
@@ -15,6 +16,23 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] float maxTries;
 
     [SerializeField] List<Material> pegMaterials = new List<Material>();
+
+    [SerializeField] GameObject leftWall;
+    [SerializeField] GameObject rightWall;
+
+    private void Awake()
+    {
+        // Get the camera's orthographic size and calculate half of its width
+        Camera mainCamera = Camera.main;
+        float cameraHalfWidth = mainCamera.orthographicSize * mainCamera.aspect;
+
+        LevelManager.LeftEdge = -cameraHalfWidth - leftWall.transform.localScale.z;
+        LevelManager.RightEdge = cameraHalfWidth + rightWall.transform.localScale.z / 2;
+
+        Debug.Log(cameraHalfWidth);
+        leftWall.transform.position = new Vector3(leftWall.transform.position.x, leftWall.transform.position.y, LevelManager.LeftEdge);
+        rightWall.transform.position = new Vector3(rightWall.transform.position.x, rightWall.transform.position.y, LevelManager.RightEdge);
+    }
 
     public void CreateLevel(int difficulty)
     {
@@ -29,19 +47,22 @@ public class LevelGenerator : MonoBehaviour
         switch (difficulty)
         {
             case 0: //Easy
-                numberOfBalls = 150;
+                numberOfBalls = 50;
                 blackChance = 0.0f;
                 purpleChance = 0.1f;
+                LevelManager.BallSize = 1.0f;
                 break;
             case 1: //Medium
                 numberOfBalls = 100;
                 blackChance = 0.05f;
                 purpleChance = 0.2f;
+                LevelManager.BallSize = 0.7f;
                 break;
             case 2: //Hard
-                numberOfBalls = 100;
+                numberOfBalls = 150;
                 blackChance = 0.15f;
                 purpleChance = 0.35f;
+                LevelManager.BallSize = 0.5f;
                 break;
         }
 
@@ -57,12 +78,12 @@ public class LevelGenerator : MonoBehaviour
             {
                 tries++;
                 float randomYPosition = Random.Range(minYPosition, maxYPosition);
-                float randomZPosition = Random.Range(minZPosition, maxZPosition);
+                float randomZPosition = Random.Range(LevelManager.LeftEdge, LevelManager.RightEdge);
 
                 spawnPosition = new Vector3(0.0f, randomYPosition, randomZPosition);
 
                 // Check for collisions with other spawned objects
-                Collider[] colliders = Physics.OverlapSphere(spawnPosition, ballPadding);
+                Collider[] colliders = Physics.OverlapSphere(spawnPosition, ballPadding*LevelManager.BallSize);
 
                 if (colliders.Length == 0)
                     isValidPosition = true;
@@ -72,10 +93,13 @@ public class LevelGenerator : MonoBehaviour
                 
             }
 
+            //Ball setup
             GameObject newBallObject = Instantiate(ballPrefab, spawnPosition, Quaternion.identity);
-            newBallObject.transform.parent = ballGroup;
-
+            newBallObject.transform.parent = staticBallGroup;
+            newBallObject.transform.localScale = new Vector3(LevelManager.BallSize, LevelManager.BallSize, LevelManager.BallSize);
+            
             BallController ballController = newBallObject.GetComponent<BallController>();
+            ballController.ActiveBallGroup = activeBallGroup;
             Renderer ballRenderer = newBallObject.GetComponent<Renderer>();
 
             float randomValue = Random.value;

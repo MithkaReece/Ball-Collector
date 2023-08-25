@@ -9,20 +9,39 @@ public class LevelManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        EventManager.OnBallActive += AddActiveBall;
-        EventManager.OnBallDeleted += DeleteActiveBall;
+    }
+
+    private void Update()
+    {
+        if (!inGame)
+            return;
+
+
+        if (!Firing.HasBallsLeft()) {
+            EndGame();
+        }
+        else
+        {
+            if(instance.staticBallGroup.childCount <= 0)
+            {
+                EndGame();
+            }
+        }
     }
 
 
     int score;
     [SerializeField] Text scoreText;
 
+    bool inGame = false;
+
     [SerializeField] GameObject difficultyMenu;
     [SerializeField] Text previousScoreText;
     [SerializeField] GameObject GUI;
     [SerializeField] GameObject FiringArrow;
 
-    [SerializeField] Transform ballGroup;
+    [SerializeField] Transform staticBallGroup;
+    [SerializeField] Transform activeBallGroup;
 
     public static void Init()
     {
@@ -32,78 +51,37 @@ public class LevelManager : MonoBehaviour
     public static void AddScore(int value)
     {
         instance.score = Mathf.Max(0, instance.score + value);
-        instance.scoreText.text = "Score: " + instance.score;
+        instance.scoreText.text = instance.score.ToString();
     }
 
     public static void EnableDifficultyMenu(bool state)
     {
+        instance.inGame = !state;
         instance.difficultyMenu.SetActive(state);
         instance.GUI.SetActive(!state);
         instance.FiringArrow.SetActive(!state);
 
     }
 
-    int numberOfActiveBalls;
-
     public static int GetNumberOfActiveBalls()
     {
-        return instance.numberOfActiveBalls;
+        return instance.activeBallGroup.childCount;
     }
 
-    public static void ClearNumberOfActiveBalls()
+
+    static void EndGame()
     {
-        instance.numberOfActiveBalls = 0;
-    }
-
-    public static void AddActiveBall()
-    {
-        instance.numberOfActiveBalls++;
-    }
-
-    void DeleteActiveBall()
-    {
-        
-        instance.numberOfActiveBalls = Mathf.Max(numberOfActiveBalls - 1, 0);
-        Debug.Log(instance.numberOfActiveBalls);
-
-
-        if (instance.numberOfActiveBalls > 0)
-            return;
-
-        // No active balls lefts
-
-        if (!Firing.HasBallsLeft())
-        {
-            EndGame();
-        }
-        else
-        {
-            bool ballsLeft = false;
-            foreach(Transform ball in ballGroup)
-            {
-                ballsLeft = true;
-                break;
-            }
-
-            if (!ballsLeft)
-                EndGame();
-        }
-    }
-
-    void EndGame()
-    {
-        previousScoreText.text = "Previously Scored: " + instance.score;
+        instance.previousScoreText.text = "Previously Scored: " + instance.score;
         // previousScoreText remaining balls
-        foreach (Transform ball in ballGroup)
+        foreach (Transform ball in instance.staticBallGroup)
             Destroy(ball.gameObject);
 
         EnableDifficultyMenu(true);
     }
 
-    private void OnDestroy()
-    {
-        EventManager.OnBallActive -= AddActiveBall;
-        EventManager.OnBallDeleted -= DeleteActiveBall;
-    }
+    public static float BallSize;
+
+    public static float LeftEdge;
+    public static float RightEdge;
 
 }

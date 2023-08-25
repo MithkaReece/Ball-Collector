@@ -14,6 +14,9 @@ public class BoxMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        float padding = 1.0f;
+        min = LevelManager.LeftEdge + 4*transform.localScale.z + padding;
+        max = LevelManager.RightEdge - 4 * transform.localScale.z - padding;
         rb = GetComponent<Rigidbody>();
         rb.velocity = new Vector3(0, 0, frequency * (max - min) / 2);
     }
