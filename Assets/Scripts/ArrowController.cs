@@ -6,12 +6,14 @@ public class ArrowController : MonoBehaviour
 {
     [SerializeField] private float minRotation; // Maximum rotation angle in degrees
 
+    public Vector3 TouchPosition;
 
     // Update is called once per frame
     void Update()
     {
         // Get the cursor position in world coordinates
-        Vector3 cursorPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //Vector3 cursorPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 cursorPosition = Camera.main.ScreenToWorldPoint(TouchPosition);
         cursorPosition.x = transform.position.x;
 
 

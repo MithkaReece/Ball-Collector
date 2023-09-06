@@ -15,10 +15,13 @@ public class Firing : MonoBehaviour
     [SerializeField] int numberOfBallsLeft;
     public Text BallsLeftText;
 
+    ArrowController arrowController;
+
     static Firing instance;
     private void Awake()
     {
         instance = this;
+        arrowController = GetComponent<ArrowController>();
     }
 
     // Start is called before the first frame update
@@ -33,12 +36,26 @@ public class Firing : MonoBehaviour
         numberOfBallsLeft = startNumberOfBalls;
     }
 
+    Vector3 touchPosition;
+
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-            FireBall();
-        Debug.Log(LevelManager.GetNumberOfActiveBalls());
+        if (SystemInfo.deviceType == DeviceType.Handheld) {
+            if (Input.touchCount > 0) {
+                Touch touch = Input.GetTouch(0);
+                if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary) {
+                    arrowController.TouchPosition = touch.position;
+                    //Store position
+                } else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled) {
+                    FireBall();
+                }
+            }
+        } else {
+            arrowController.TouchPosition = Input.mousePosition;
+            if (Input.GetMouseButtonDown(0))
+                FireBall();
+        }
     }
 
     void FireBall()
